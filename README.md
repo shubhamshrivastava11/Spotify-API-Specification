@@ -1,2 +1,3 @@
 # Spotify-API-Specification
-RAML specifications for SPOTIFY 
+![spotify-logo-1920x1080](https://github.com/shubhamshrivastava11/Spotify-API-Specification/assets/128193947/0d8ba66c-b3b4-4e3e-ad0e-9389edd8456c)
+
