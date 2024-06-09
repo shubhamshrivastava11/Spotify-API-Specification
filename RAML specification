@@ -1,0 +1,436 @@
+#%RAML 1.0
+title: Spotify API
+version: v1
+baseUri: https://api.spotify.com/v1
+mediaType: application/json
+
+types:
+  Error:
+    type: object
+    properties:
+      status:
+        type: integer
+      message:
+        type: string
+
+  User:
+    type: object
+    properties:
+      id:
+        type: string
+      display_name:
+        type: string
+      email:
+        type: string
+      href:
+        type: string
+      images:
+        type: array
+        items:
+          type: object
+          properties:
+            url:
+              type: string
+
+  Playlist:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      description:
+        type: string
+      href:
+        type: string
+      tracks:
+        type: array
+        items:
+          type: object
+          properties:
+            href:
+              type: string
+
+  Album:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      release_date:
+        type: string
+        pattern: ^\d{4}-\d{2}-\d{2}$
+      total_tracks:
+        type: integer
+      artists:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+      tracks:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+
+  Track:
+    type: object
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      duration_ms:
+        type: integer
+      explicit:
+        type: boolean
+      artists:
+        type: array
+        items:
+          type: object
+          properties:
+            id:
+              type: string
+            name:
+              type: string
+
+  PlaylistTrack:
+    type: object
+    properties:
+      added_at:
+        type: string
+        pattern: ^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$
+      track:
+        type: 
+          type: newtype
+
+
+
+  newtype: Track
+securitySchemes:
+  oauth_2_0:
+    type: OAuth 2.0
+    settings:
+      authorizationUri: https://accounts.spotify.com/authorize
+      accessTokenUri: https://accounts.spotify.com/api/token
+      authorizationGrants: [ authorization_code, client_credentials ]
+
+securedBy: [ oauth_2_0 ]
+
+/users/{user_id}:
+  get:
+    description: Get a user's profile information
+    responses:
+      200:
+        body:
+          application/json:
+            type: User
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+      404:
+        body:
+          application/json:
+            type: Error
+
+  /playlists:
+    get:
+      description: Get a list of the current user's playlists
+      responses:
+        200:
+          body:
+            application/json:
+              type: Playlist[]
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+    post:
+      description: Create a playlist for a user
+      body:
+        application/json:
+          type: object
+          properties:
+            name: string
+            description: string
+            public: boolean
+      responses:
+        201:
+          body:
+            application/json:
+              type: Playlist
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+
+/playlists/{playlist_id}:
+  get:
+    description: Get a playlist's details
+    responses:
+      200:
+        body:
+          application/json:
+            type: Playlist
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+      404:
+        body:
+          application/json:
+            type: Error
+
+  put:
+    description: Change a playlist's details
+    body:
+      application/json:
+        type: object
+        properties:
+          name: string
+          description: string
+          public: boolean
+    responses:
+      200:
+        body:
+          application/json:
+            type: Playlist
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+
+  delete:
+    description: Delete a playlist
+    responses:
+      200:
+        body:
+          application/json:
+            type: object
+            properties:
+              message: string
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+
+  /tracks:
+    get:
+      description: Get a playlist's tracks
+      responses:
+        200:
+          body:
+            application/json:
+              type: PlaylistTrack[]
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+    post:
+      description: Add tracks to a playlist
+      body:
+        application/json:
+          type: object
+          properties:
+            uris: string[]
+      responses:
+        201:
+          body:
+            application/json:
+              type: PlaylistTrack
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+
+    delete:
+      description: Remove tracks from a playlist
+      body:
+        application/json:
+          type: object
+          properties:
+            uris: string[]
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                message: string
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+
+/albums/{album_id}:
+  get:
+    description: Get an album's details
+    responses:
+      200:
+        body:
+          application/json:
+            type: Album
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+      404:
+        body:
+          application/json:
+            type: Error
+
+  /tracks:
+    get:
+      description: Get an album's tracks
+      responses:
+        200:
+          body:
+            application/json:
+              type: Track[]
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+        404:
+          body:
+            application/json:
+              type: Error
+
+/tracks/{track_id}:
+  get:
+    description: Get a track's details
+    responses:
+      200:
+        body:
+          application/json:
+            type: Track
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+      404:
+        body:
+          application/json:
+            type: Error
+
+/me:
+  get:
+    description: Get current user's profile information
+    responses:
+      200:
+        body:
+          application/json:
+            type: User
+      400:
+        body:
+          application/json:
+            type: Error
+      401:
+        body:
+          application/json:
+            type: Error
+
+  /top/artists:
+    get:
+      description: Get the current user's top artists
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id: string
+                      name: string
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
+
+  /top/tracks:
+    get:
+      description: Get the current user's top tracks
+      responses:
+        200:
+          body:
+            application/json:
+              type: object
+              properties:
+                items:
+                  type: array
+                  items:
+                    type: Track
+        400:
+          body:
+            application/json:
+              type: Error
+        401:
+          body:
+            application/json:
+              type: Error
